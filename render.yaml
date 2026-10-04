@@ -1,0 +1,31 @@
+# Render Blueprint: GitHub repo connect panni "New → Blueprint" select pannu.
+# Database Neon la (free, expire aagaadhu). Photos Cloudinary la.
+# "sync: false" nu irukkuradhu ellaam Render screen la nee paste pannanum.
+services:
+  - type: web
+    name: thodar-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn thodar.wsgi:application --workers 2 --timeout 60
+    healthCheckPath: /api/site/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DEBUG
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL        # Neon connection string
+        sync: false
+      - key: CLOUDINARY_URL      # Cloudinary API environment variable
+        sync: false
+      - key: CORS_ORIGINS        # eg. https://thodar.vercel.app,https://thodar.co.in
+        sync: false
+      - key: ADMIN_USERNAME      # un admin username (eg. jeeva)
+        sync: false
+      - key: ADMIN_PASSWORD      # strong password — yaarukkum sollaadha
+        sync: false

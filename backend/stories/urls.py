@@ -1,0 +1,40 @@
+from django.urls import path
+from . import views, admin_api
+
+urlpatterns = [
+    path('site/', admin_api.public_site),
+    path('stories/', views.StoryListCreate.as_view()),
+    path('stories/of-the-week/', views.story_of_week),
+    path('drafts/', views.my_drafts),
+    path('series/mine/', views.my_series),
+    path('series/<int:pk>/', views.series_detail),
+    path('challenges/', views.challenges),
+    path('challenges/<int:pk>/', views.challenge_detail),
+    path('stories/<int:pk>/tree/', views.story_tree),
+    path('stories/<int:pk>/bookmark/', views.toggle_bookmark),
+    path('bookmarks/', views.BookmarkList.as_view()),
+    path('parts/<int:pk>/', views.part_detail),
+    path('parts/<int:pk>/path/', views.part_path),
+    path('parts/<int:pk>/continue/', views.continue_part),
+    path('parts/<int:pk>/like/', views.toggle_like),
+    path('parts/<int:pk>/report/', views.report_part),
+    path('parts/<int:pk>/comments/', views.CommentListCreate.as_view()),
+    path('comments/<int:pk>/', views.delete_comment),
+    path('notifications/', views.NotificationList.as_view()),
+    path('notifications/unread/', views.unread_count),
+    path('notifications/read-all/', views.mark_all_read),
+    path('leaderboard/', views.leaderboard),
+
+    # 👑 Admin
+    path('admin/stats/', admin_api.stats),
+    path('admin/users/', admin_api.users),
+    path('admin/users/approve-all/', admin_api.approve_all),
+    path('admin/users/<int:pk>/', admin_api.user_detail),
+    path('admin/stories/', admin_api.stories),
+    path('admin/stories/<int:pk>/', admin_api.story_detail),
+    path('admin/reports/', admin_api.reports),
+    path('admin/reports/<int:pk>/', admin_api.report_action),
+    path('admin/settings/', admin_api.site_settings),
+    path('admin/challenges/', admin_api.challenges),
+    path('admin/challenges/<int:pk>/', admin_api.challenge_detail),
+]
