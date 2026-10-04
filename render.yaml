@@ -6,6 +6,7 @@ services:
     name: thodar-api
     runtime: python
     plan: free
+    region: singapore   # Neon um Singapore la — fast
     rootDir: backend
     buildCommand: bash build.sh
     startCommand: gunicorn thodar.wsgi:application --workers 2 --timeout 60
