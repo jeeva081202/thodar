@@ -319,3 +319,20 @@ class StayLoggedInTests(APITestCase):
         self.u.save()
         r = self.client.post('/api/auth/login/', {'username': 'ravi', 'password': 'pass1234'})
         self.assertIn('block', str(r.data['detail']))
+
+
+class LongTamilStoryTests(APITestCase):
+    """Tamil kadhai + browser \\r\\n line breaks limit ah thaandakoodaadhu."""
+    def test_crlf_counts_as_one_and_5000_limit(self):
+        from django.contrib.auth.models import User
+        from rest_framework.test import APIClient
+        u = User.objects.create_user('tamilwriter', password='x12345678!')
+        c = APIClient(); c.force_authenticate(u)
+        body = 'கதை வரி\r\n' * 600   # CRLF-oda 5400, normalize aana 4800
+        self.assertGreater(len(body), 5000)
+        r = c.post('/api/stories/', {'title': 'காதல்', 'genre': 'love', 'language': 'ta',
+                                      'content_type': 'kadhai', 'opening': body}, format='multipart')
+        self.assertEqual(r.status_code, 201, r.content)
+        r = c.post('/api/stories/', {'title': 'Too long', 'genre': 'love', 'language': 'ta',
+                                      'content_type': 'kadhai', 'opening': 'அ' * 5001}, format='multipart')
+        self.assertEqual(r.status_code, 400)

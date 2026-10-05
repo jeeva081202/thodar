@@ -29,6 +29,7 @@ export default function StoryPage() {
   const [selectedId, setSelectedIdRaw] = useState(null)
   const [draft, setDraft] = useState('')
   const [speaker, setSpeaker] = useState('')
+  const maxLen = ({ article: 12000, quote: 300 })[data?.story?.content_type] || 5000
   const [isEnding, setIsEnding] = useState(false)
   const [img, setImg] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -337,7 +338,7 @@ export default function StoryPage() {
                 {type === 'dialogue' && (
                   <SmartField as="input" value={speaker} onChange={setSpeaker} maxLength={40} placeholder={`🎭 ${t('speaker')} — ${t('speaker_ph')}`} toolbar={false} />
                 )}
-                <SmartField rows={type === 'kavithai' ? 7 : 5} maxLength={2000} value={draft} onChange={setDraft}
+                <SmartField rows={type === 'kavithai' ? 7 : 5} maxLength={maxLen} value={draft} onChange={setDraft}
                             className={`ta-${type}`} placeholder={branches.length ? t('new_branch_ph') : t('continue_ph')} />
                 <div className="continue-row">
                   <label className="check">
@@ -348,7 +349,7 @@ export default function StoryPage() {
                     🖼️ {img ? img.name.slice(0, 14) : t('add_image')}
                     <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => setImg(e.target.files?.[0] || null)} />
                   </label>
-                  <span className="counter" title="Max 2000 letters">{draft.length}/2000 max</span>
+                  <span className="counter" title={`Max ${maxLen} letters`}>{draft.length}/{maxLen} max</span>
                 </div>
                 {type === 'dialogue' && draft.trim() && !speaker.trim() && (
                   <p className="form-hint">👆 Mela <b>Character name</b> type pannunga (eg. Ravi) — apram dhaan Add button work aagum</p>

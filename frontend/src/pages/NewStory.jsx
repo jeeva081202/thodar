@@ -131,7 +131,7 @@ export default function NewStory() {
 
   const type = f.content_type
   const ty = TYPES[type]
-  const max = MAX[type] || 2000
+  const max = MAX[type] || 5000
   const okLen = type === 'quote' ? f.opening.trim().length >= 5 : f.opening.trim().length >= 20
   const okTitle = type === 'quote' || f.title.trim()
   const fitting = challenges.filter((c) => !c.content_type || c.content_type === type)

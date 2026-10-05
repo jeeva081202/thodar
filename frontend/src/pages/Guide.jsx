@@ -87,7 +87,7 @@ const RULES = [
 const FAQ = [
   { en: ['Is Thodar free?', 'Yes — free forever, for everyone. No premium, no ads.'], ta: ['தொடர் இலவசமா?', 'ஆம் — என்றும் இலவசம், அனைவருக்கும். பிரீமியம் இல்லை, விளம்பரம் இல்லை.'] },
   { en: ['Why is the Add button grey?', 'Write at least 10 letters. In Dialogue, also fill "Character name".'], ta: ['Add பட்டன் ஏன் சாம்பல் நிறம்?', 'குறைந்தது 10 எழுத்துகள் எழுது. Dialogue-ல் "Character name" கூட போடு.'] },
-  { en: ['What does 29/2000 mean?', 'Letters typed / maximum allowed. You don\'t need to write 2000.'], ta: ['29/2000 என்றால் என்ன?', 'டைப் செய்த எழுத்துகள் / அதிகபட்சம். 2000 எழுத வேண்டியதில்லை.'] },
+  { en: ['What does 29/5000 mean?', 'Letters typed / maximum allowed (stories 5000, articles 12000). You don\'t need to write that much. Longer story? Continue it as the next part 🌳'], ta: ['29/5000 என்றால் என்ன?', 'டைப் செய்த எழுத்துகள் / அதிகபட்சம் (கதை 5000, கட்டுரை 12000). அவ்வளவு எழுத வேண்டியதில்லை. நீண்ட கதையா? அடுத்த பகுதியாக தொடருங்கள் 🌳'] },
   { en: ['Can I edit or delete my part?', 'Yes. Open the story and use ✏️ / 🗑️ on your own part.'], ta: ['என் பகுதியை மாற்றலாமா, நீக்கலாமா?', 'ஆம். கதையைத் திறந்து உன் பகுதியில் ✏️ / 🗑️ பயன்படுத்து.'] },
   { en: ['I can\'t log in?', 'Your account may be waiting for approval, or blocked. Contact the admin.'], ta: ['லாகின் ஆகவில்லையா?', 'உன் கணக்கு அனுமதிக்காக காத்திருக்கலாம் அல்லது block ஆகியிருக்கலாம். Admin-ஐ தொடர்பு கொள்.'] },
 ]

@@ -280,6 +280,13 @@ def part_path(request, pk):
     })
 
 
+def norm_text(text):
+    """Browser \\r\\n -> \\n (illaina line break 2 letters ah count aagum)."""
+    if text is None:
+        return None
+    return str(text).replace('\r\n', '\n').replace('\r', '\n')
+
+
 def check_content(story, content, speaker=''):
     limit = story.max_len()
     if story.content_type == 'dialogue':
@@ -309,7 +316,7 @@ def part_detail(request, pk):
                             status=status.HTTP_400_BAD_REQUEST)
         part.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    content = request.data.get('content')
+    content = norm_text(request.data.get('content'))
     speaker = request.data.get('speaker', part.speaker)
     if content is not None:
         content = content.strip()
@@ -340,7 +347,7 @@ def continue_part(request, pk):
     if parent.is_ending:
         return Response({'detail': 'Indha branch mudinjidichu. Vera part ah continue pannunga.'},
                         status=status.HTTP_400_BAD_REQUEST)
-    content = (request.data.get('content') or '').strip()
+    content = norm_text(request.data.get('content') or '').strip()
     speaker = (request.data.get('speaker') or '').strip()[:40]
     err = check_content(story, content, speaker)
     if err:

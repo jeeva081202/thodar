@@ -28,7 +28,9 @@ class Story(models.Model):
         ('quote', 'Quote'),                  # chinna lines
     ]
     CONTINUABLE = {'kadhai', 'kavithai', 'dialogue'}
+    # Tamil letters (தொ, கா) neraiya space edukkum — adhanaala kadhai ku 5000
     MAX_LEN = {'article': 12000, 'quote': 300}
+    DEFAULT_LEN = 5000
     LANGUAGES = [('ta', 'தமிழ்'), ('en', 'English'), ('mix', 'Tanglish')]
 
     title = models.CharField(max_length=200)
@@ -66,7 +68,7 @@ class Story(models.Model):
         return self.content_type in self.CONTINUABLE
 
     def max_len(self):
-        return self.MAX_LEN.get(self.content_type, 2000)
+        return self.MAX_LEN.get(self.content_type, self.DEFAULT_LEN)
 
 
 class Series(models.Model):

@@ -158,7 +158,9 @@ class StoryWriteSerializer(serializers.ModelSerializer):
         status = data.get('status') or getattr(self.instance, 'status', 'published')
         opening = data.get('opening')
         if opening is not None:
-            limit = Story.MAX_LEN.get(ctype, 2000)
+            # Browser form \r\n (2 letters) anuppum — oru line break = 1 letter dhaan
+            opening = data['opening'] = opening.replace('\r\n', '\n').replace('\r', '\n')
+            limit = Story.MAX_LEN.get(ctype, Story.DEFAULT_LEN)
             if len(opening) > limit:
                 raise serializers.ValidationError({'opening': f'Max {limit} letters.'})
             if status == 'published' and len(opening.strip()) < (5 if ctype == 'quote' else 20):
