@@ -116,7 +116,7 @@ def me(request):
 def change_password(request):
     u = request.user
     if not u.check_password(request.data.get('old_password', '')):
-        return Response({'detail': 'Pazhaya password thappu.'}, status=400)
+        return Response({'detail': 'Your current password is incorrect.'}, status=400)
     new = request.data.get('new_password', '')
     try:
         validate_password(new, u)
@@ -154,7 +154,7 @@ def badges(u, likes, followers):
 def profile(request, username):
     u = get_object_or_404(User, username=username)
     if not u.is_active and not (request.user.is_authenticated and request.user.is_staff):
-        return Response({'detail': 'User kidaikkala.'}, status=404)
+        return Response({'detail': 'User not found.'}, status=404)
     prof, _ = Profile.objects.get_or_create(user=u)
     me = request.user.is_authenticated and request.user.id == u.id
     parts = (u.parts.select_related('story').filter(story__is_hidden=False, story__status='published')
@@ -195,7 +195,7 @@ def profile(request, username):
 def toggle_follow(request, username):
     target = get_object_or_404(User, username=username)
     if target == request.user:
-        return Response({'detail': 'Ungalai neengale follow panna mudiyaadhu 😄'},
+        return Response({'detail': 'You can\'t follow yourself 😄'},
                         status=status.HTTP_400_BAD_REQUEST)
     f, created = Follow.objects.get_or_create(follower=request.user, following=target)
     if created:

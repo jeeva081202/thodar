@@ -15,7 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, v):
         if not v.replace('_', '').isalnum():
-            raise serializers.ValidationError('Letters, numbers, _ mattum use pannunga.')
+            raise serializers.ValidationError('Use only letters, numbers and _ (underscore).')
         return v
 
     def create(self, data):
@@ -29,8 +29,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         username = attrs.get(self.username_field)
         user = User.objects.filter(username=username).first()
         if user and not user.is_active and user.check_password(attrs.get('password', '')):
-            msg = ('Unga account admin approval ku wait pannudhu ⏳' if user.last_login is None
-                   else 'Unga account admin ah block pannirukaanga 🚫')
+            msg = ('Your account is waiting for admin approval ⏳' if user.last_login is None
+                   else 'Your account has been blocked by the admin 🚫')
             raise exceptions.AuthenticationFailed(msg, code='inactive')
         return super().validate(attrs)
 
@@ -42,5 +42,5 @@ class RefreshSerializer(TokenRefreshSerializer):
         token = RefreshToken(attrs['refresh'])
         user = User.objects.filter(id=token.payload.get('user_id')).first()
         if user is None or not user.is_active:
-            raise exceptions.AuthenticationFailed('Account active illa.', code='inactive')
+            raise exceptions.AuthenticationFailed('This account is not active.', code='inactive')
         return super().validate(attrs)

@@ -137,18 +137,18 @@ def story_tree(request, pk):
     story = get_object_or_404(Story.objects.select_related('created_by__profile', 'series', 'challenge'), pk=pk)
     owner = request.user.is_authenticated and request.user.id == story.created_by_id
     if (story.is_hidden or story.status == 'draft') and not (owner or is_admin(request)):
-        return Response({'detail': 'Indha kadhai kidaikkala.'}, status=404)
+        return Response({'detail': 'Story not found.'}, status=404)
     if request.method == 'DELETE':
         if not owner and not is_admin(request):
-            return Response({'detail': 'Ungal kadhai mattum dhaan delete panna mudiyum.'}, status=403)
+            return Response({'detail': 'You can only delete your own story.'}, status=403)
         story.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     if request.method == 'PATCH':
         if not owner:
-            return Response({'detail': 'Ungal kadhai mattum dhaan edit panna mudiyum.'}, status=403)
+            return Response({'detail': 'You can only edit your own story.'}, status=403)
         root = story.root_part
         if 'opening' in request.data and root and root.children.exists():
-            return Response({'detail': 'Yaaro continue pannitaanga, first part ah ippo maatha mudiyaadhu.'}, status=400)
+            return Response({'detail': 'Someone has already continued this story, so the first part can\'t be changed now.'}, status=400)
         ser = StoryWriteSerializer(story, data=request.data, partial=True, context={'request': request})
         ser.is_valid(raise_exception=True)
         save_story(ser, request, instance=story)
@@ -264,7 +264,7 @@ def part_path(request, pk):
     story = part.story
     if story.is_hidden or story.status == 'draft':
         if not (request.user.is_authenticated and (request.user.id == story.created_by_id or request.user.is_staff)):
-            return Response({'detail': 'Kidaikkala.'}, status=404)
+            return Response({'detail': 'Not found.'}, status=404)
     ids = []
     node = part
     while node:
@@ -291,13 +291,13 @@ def check_content(story, content, speaker=''):
     limit = story.max_len()
     if story.content_type == 'dialogue':
         if not speaker.strip():
-            return 'Character peru (speaker) venum.'
+            return 'Please add the character name.'
         if len(content) < 2:
-            return 'Dialogue ezhudhunga.'
+            return 'Please write the dialogue.'
     elif len(content) < 10:
-        return 'Konjam adhigam ezhudhunga (min 10 letters).'
+        return 'Please write at least 10 letters.'
     if len(content) > limit:
-        return f'Max {limit} letters.'
+        return f'Too long: maximum {limit} letters.'
     return None
 
 
@@ -306,13 +306,13 @@ def check_content(story, content, speaker=''):
 def part_detail(request, pk):
     part = get_object_or_404(Part.objects.select_related('story'), pk=pk)
     if part.author != request.user:
-        return Response({'detail': 'Ungal part mattum dhaan maatha mudiyum.'}, status=403)
+        return Response({'detail': 'You can only edit your own part.'}, status=403)
     if part.children.exists():
-        return Response({'detail': 'Yaaro idha continue pannitaanga, ippo maatha mudiyaadhu.'},
+        return Response({'detail': 'Someone has already continued from this part, so it can\'t be changed now.'},
                         status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'DELETE':
         if part.parent is None:
-            return Response({'detail': 'First part ah delete panna, kadhaiye delete pannunga.'},
+            return Response({'detail': 'To remove the first part, delete the whole story.'},
                             status=status.HTTP_400_BAD_REQUEST)
         part.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -343,9 +343,9 @@ def continue_part(request, pk):
     parent = get_object_or_404(Part.objects.select_related('story', 'author'), pk=pk)
     story = parent.story
     if not story.can_continue or story.status != 'published':
-        return Response({'detail': 'Indha post ah continue panna mudiyaadhu.'}, status=400)
+        return Response({'detail': 'This post can\'t be continued.'}, status=400)
     if parent.is_ending:
-        return Response({'detail': 'Indha branch mudinjidichu. Vera part ah continue pannunga.'},
+        return Response({'detail': 'This branch has ended. Continue from another part.'},
                         status=status.HTTP_400_BAD_REQUEST)
     content = norm_text(request.data.get('content') or '').strip()
     speaker = (request.data.get('speaker') or '').strip()[:40]
@@ -370,7 +370,7 @@ def toggle_like(request, pk):
     part = get_object_or_404(Part.objects.select_related('story', 'author'), pk=pk)
     emoji = request.data.get('emoji') or '❤️'
     if emoji not in REACTIONS:
-        return Response({'detail': 'Indha emoji allowed illa.'}, status=400)
+        return Response({'detail': 'This emoji is not allowed.'}, status=400)
     like = Like.objects.filter(user=request.user, part=part).first()
     if like and like.emoji == emoji:
         like.delete()
@@ -394,9 +394,9 @@ def report_part(request, pk):
     part = get_object_or_404(Part, pk=pk)
     reason = request.data.get('reason')
     if reason not in dict(Report.REASONS):
-        return Response({'detail': 'Reason select pannunga.'}, status=400)
+        return Response({'detail': 'Please choose a reason.'}, status=400)
     if Report.objects.filter(reporter=request.user, part=part, status='open').exists():
-        return Response({'detail': 'Already report pannirukeenga. Admin paappaanga 🙏'}, status=400)
+        return Response({'detail': 'You have already reported this. The admin will review it 🙏'}, status=400)
     Report.objects.create(reporter=request.user, part=part, reason=reason,
                           note=str(request.data.get('note', ''))[:300])
     return Response({'ok': True}, status=201)
@@ -420,7 +420,7 @@ class CommentListCreate(generics.ListCreateAPIView):
 def delete_comment(request, pk):
     c = get_object_or_404(Comment, pk=pk)
     if c.user != request.user:
-        return Response({'detail': 'Ungal comment mattum dhaan delete panna mudiyum.'}, status=403)
+        return Response({'detail': 'You can only delete your own comment.'}, status=403)
     c.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 

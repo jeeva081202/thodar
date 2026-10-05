@@ -22,7 +22,7 @@ export default function StoryPage() {
   const [params, setParams] = useSearchParams()
   const nav = useNavigate()
   const { user } = useAuth()
-  const { t } = useT()
+  const { t, lang } = useT()
   const toast = useToast()
   const [data, setData] = useState(null)
   const [notFound, setNotFound] = useState(false)
@@ -352,10 +352,14 @@ export default function StoryPage() {
                   <span className="counter" title={`Max ${maxLen} letters`}>{draft.length}/{maxLen} max</span>
                 </div>
                 {type === 'dialogue' && draft.trim() && !speaker.trim() && (
-                  <p className="form-hint">👆 Mela <b>Character name</b> type pannunga (eg. Ravi) — apram dhaan Add button work aagum</p>
+                  <p className="form-hint">{lang === 'ta'
+                    ? <>👆 மேலே <b>கதாபாத்திரத்தின் பெயர்</b> எழுதுங்கள் (உ.தா. ரவி), அப்போது தான் Add வேலை செய்யும்</>
+                    : <>👆 Add the <b>character name</b> above (e.g. Ravi) to enable the Add button</>}</p>
                 )}
                 {type !== 'dialogue' && draft.trim().length > 0 && draft.trim().length < 10 && (
-                  <p className="form-hint">✍️ Kuraindhadhu 10 letters ezhudhunga — innum {10 - draft.trim().length} venum</p>
+                  <p className="form-hint">{lang === 'ta'
+                    ? `✍️ குறைந்தது 10 எழுத்துகள் எழுதுங்கள், இன்னும் ${10 - draft.trim().length} தேவை`
+                    : `✍️ Write at least 10 letters, ${10 - draft.trim().length} more to go`}</p>
                 )}
                 <motion.button whileTap={{ scale: 0.96 }} className="btn btn-grad shine"
                                disabled={busy || (type === 'dialogue' ? !draft.trim() || !speaker.trim() : draft.trim().length < 10)}>

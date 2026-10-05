@@ -67,7 +67,7 @@ api.interceptors.response.use(
 
 export const errorText = (err) => {
   const d = err?.response?.data
-  if (!d) return 'Server kooda connect aagala. Backend run aagudha?'
+  if (!d) return 'Can\'t reach the server. Please check your internet and try again in a few seconds.'
   if (typeof d === 'string') return d
   if (d.detail) return d.detail
   return Object.entries(d).map(([k, v]) => `${k}: ${[].concat(v).join(' ')}`).join(' • ')

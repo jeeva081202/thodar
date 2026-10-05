@@ -111,7 +111,7 @@ def users(request):
 def user_detail(request, pk):
     u = get_object_or_404(User, pk=pk)
     if u == request.user:
-        return Response({'detail': 'Ungal sondha account ah inga maatha mudiyaadhu 🙂'}, status=400)
+        return Response({'detail': 'You can\'t change your own account here 🙂'}, status=400)
     if request.method == 'DELETE':
         u.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -188,7 +188,7 @@ def report_action(request, pk):
         r.save()
         return Response({'ok': True})
     if action not in ('remove', 'block'):
-        return Response({'detail': 'Action thappu.'}, status=400)
+        return Response({'detail': 'Invalid action.'}, status=400)
     part = r.part
     if action == 'block' and not part.author.is_staff:
         part.author.is_active = False
@@ -233,7 +233,7 @@ def challenges(request):
         ser = ChallengeSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         if ser.validated_data['ends_at'] <= ser.validated_data['starts_at']:
-            return Response({'detail': 'End date, start date ku apram irukkanum.'}, status=400)
+            return Response({'detail': 'End date must be after the start date.'}, status=400)
         ser.save()
         return Response(ser.data, status=201)
     qs = Challenge.objects.annotate(entries_count=Count('entries'))

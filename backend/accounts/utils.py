@@ -34,7 +34,7 @@ def clean_image(f, max_side=1600, square=False):
     if f is None:
         return None
     if f.size > MAX_UPLOAD:
-        raise ValidationError({'detail': 'Image 6MB ku keezha irukkanum.'})
+        raise ValidationError({'detail': 'Image must be smaller than 6 MB.'})
     try:
         img = Image.open(f)
         img.verify()
@@ -42,7 +42,7 @@ def clean_image(f, max_side=1600, square=False):
         img = Image.open(f)
         img = ImageOps.exif_transpose(img)
     except (UnidentifiedImageError, OSError, ValueError):
-        raise ValidationError({'detail': 'Idhu valid image illa (JPG / PNG / WEBP podunga).'})
+        raise ValidationError({'detail': 'This is not a valid image. Please use JPG, PNG or WEBP.'})
     if square:
         side = min(img.size)
         img = ImageOps.fit(img, (side, side))

@@ -154,7 +154,7 @@ class StoryWriteSerializer(serializers.ModelSerializer):
         ctype = data.get('content_type') or getattr(self.instance, 'content_type', 'kadhai')
         title = data.get('title', getattr(self.instance, 'title', ''))
         if ctype != 'quote' and not (title or '').strip() and data.get('status', 'published') == 'published':
-            raise serializers.ValidationError({'title': 'Title venum.'})
+            raise serializers.ValidationError({'title': 'Please add a title.'})
         status = data.get('status') or getattr(self.instance, 'status', 'published')
         opening = data.get('opening')
         if opening is not None:
@@ -162,19 +162,19 @@ class StoryWriteSerializer(serializers.ModelSerializer):
             opening = data['opening'] = opening.replace('\r\n', '\n').replace('\r', '\n')
             limit = Story.MAX_LEN.get(ctype, Story.DEFAULT_LEN)
             if len(opening) > limit:
-                raise serializers.ValidationError({'opening': f'Max {limit} letters.'})
+                raise serializers.ValidationError({'opening': f'Too long: maximum {limit} letters.'})
             if status == 'published' and len(opening.strip()) < (5 if ctype == 'quote' else 20):
-                raise serializers.ValidationError({'opening': 'Konjam adhigam ezhudhunga.'})
+                raise serializers.ValidationError({'opening': 'Please write a little more (at least 20 letters).'})
         elif not self.instance and status == 'published':
-            raise serializers.ValidationError({'opening': 'Content venum.'})
+            raise serializers.ValidationError({'opening': 'Please write something first.'})
         if data.get('is_anonymous') and ctype != 'personal':
             data['is_anonymous'] = False
         user = self.context['request'].user
         if data.get('series') and data['series'].author_id != user.id:
-            raise serializers.ValidationError({'series': 'Ungal series mattum.'})
+            raise serializers.ValidationError({'series': 'You can only add to your own series.'})
         ch = data.get('challenge')
         if ch and not ch.is_active:
-            raise serializers.ValidationError({'challenge': 'Indha challenge mudinjidichu.'})
+            raise serializers.ValidationError({'challenge': 'This challenge has ended.'})
         return data
 
 
