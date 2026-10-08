@@ -1270,3 +1270,7 @@ img.avatar { object-fit: cover; display: inline-block; }
 .more-sheet .free-badge { align-self: stretch; text-align: center; }
 .more-logout { color: #E11D48; }
 @media (max-width: 360px) { .more-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Register: username / password live hint */
+.field-hint.bad { color: #F59E0B; }
+.field-hint b { color: var(--text); }

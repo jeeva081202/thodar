@@ -336,3 +336,16 @@ class LongTamilStoryTests(APITestCase):
         r = c.post('/api/stories/', {'title': 'Too long', 'genre': 'love', 'language': 'ta',
                                       'content_type': 'kadhai', 'opening': 'அ' * 5001}, format='multipart')
         self.assertEqual(r.status_code, 400)
+
+
+class UsernameFriendlyTests(APITestCase):
+    """'Mathankumar G' maadhiri space-oda username + login capital/small letters."""
+    def test_space_username_and_case_insensitive_login(self):
+        r = self.client.post('/api/auth/register/', {'username': 'Mathankumar G', 'password': 'Kadhai@2026x'}, format='multipart')
+        self.assertIn(r.status_code, (200, 201), r.content)
+        from django.contrib.auth.models import User
+        self.assertTrue(User.objects.filter(username='Mathankumar_G').exists())
+        r = self.client.post('/api/auth/register/', {'username': 'mathankumar_g', 'password': 'Kadhai@2026x'}, format='multipart')
+        self.assertEqual(r.status_code, 400)
+        r = self.client.post('/api/auth/login/', {'username': 'mathankumar g', 'password': 'Kadhai@2026x'}, format='json')
+        self.assertEqual(r.status_code, 200, r.content)

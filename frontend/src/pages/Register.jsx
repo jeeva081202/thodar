@@ -27,6 +27,9 @@ export function Chips({ options, value, onChange, multi = true }) {
   )
 }
 
+// "Mathankumar G" -> "Mathankumar_G" (space -> _, matha symbols remove)
+const cleanUsername = (v) => v.replace(/\s+/g, '_').replace(/[^A-Za-z0-9_]/g, '').slice(0, 30)
+
 export default function Register() {
   const { register } = useAuth()
   const { t, lang } = useT()
@@ -44,8 +47,10 @@ export default function Register() {
   const [busy, setBusy] = useState(false)
   const set = (k) => (v) => setF((x) => ({ ...x, [k]: v?.target ? v.target.value : v }))
 
+  const ta = lang === 'ta'
+  const userOk = /^[A-Za-z0-9_]{3,30}$/.test(f.username)
   const stepOk = [
-    /^[A-Za-z0-9_]{3,30}$/.test(f.username) && f.password.length >= 6,
+    userOk && f.password.length >= 6,
     f.full_name.trim().length >= 2 && f.state && f.languages.length > 0,
     true,
   ]
@@ -103,10 +108,22 @@ export default function Register() {
                       transition={{ duration: 0.25 }}>
             {step === 0 && (
               <>
-                <input className="input" placeholder={t('username')} autoComplete="username" value={f.username} onChange={set('username')} />
-                <span className="field-hint">{t('username_hint')}</span>
+                <input className="input" placeholder={ta ? 'பயனர் பெயர் (உ.தா. mathan_kumar)' : 'Username (e.g. mathan_kumar)'} autoComplete="username"
+                       autoCapitalize="none" autoCorrect="off" spellCheck={false} value={f.username}
+                       onChange={(e) => set('username')(cleanUsername(e.target.value))} />
+                <span className={`field-hint ${f.username && !userOk ? 'bad' : ''}`}>
+                  {f.username
+                    ? (userOk
+                        ? <>✅ {ta ? 'உன் பெயர்' : 'You will be'} <b>@{f.username}</b></>
+                        : (ta ? '✍️ குறைந்தது 3 எழுத்துகள்' : '✍️ At least 3 characters'))
+                    : (ta ? 'எழுத்துகள், எண்கள், _ மட்டும். Space தானாக _ ஆக மாறும். முழுப் பெயர் அடுத்த படியில்.'
+                          : 'Letters, numbers and _ only. Spaces become _ automatically. Your full name comes in the next step.')}
+                </span>
                 <input className="input" type="email" placeholder={t('email_opt')} autoComplete="email" value={f.email} onChange={set('email')} />
                 <input className="input" type="password" placeholder={t('password_min')} autoComplete="new-password" value={f.password} onChange={set('password')} />
+                {f.password && f.password.length < 6 && (
+                  <span className="field-hint bad">{ta ? `🔒 இன்னும் ${6 - f.password.length} எழுத்துகள் தேவை` : `🔒 Password needs ${6 - f.password.length} more character${6 - f.password.length === 1 ? '' : 's'}`}</span>
+                )}
               </>
             )}
             {step === 1 && (

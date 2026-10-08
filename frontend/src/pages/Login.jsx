@@ -36,6 +36,7 @@ export default function Login() {
         <h2>{t('welcome_back')}</h2>
         <p className="muted">{t('welcome_sub')}</p>
         <input className="input" placeholder={t('username')} autoComplete="username" value={form.username} required
+               autoCapitalize="none" autoCorrect="off" spellCheck={false}
                onChange={(e) => setForm({ ...form, username: e.target.value })} />
         <input className="input" type="password" placeholder={t('password')} autoComplete="current-password" value={form.password} required
                onChange={(e) => setForm({ ...form, password: e.target.value })} />
